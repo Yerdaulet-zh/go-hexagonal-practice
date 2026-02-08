@@ -3,7 +3,7 @@ package profile
 import (
 	"time"
 
-	user_model "github.com/go-hexagonal-practice/internal/core/domain/user"
+	"github.com/go-hexagonal-practice/internal/adapters/repository/postgre/persistency/user"
 	"github.com/google/uuid"
 	"gorm.io/datatypes"
 )
@@ -18,7 +18,7 @@ type UserProfiles struct {
 	Preferences   *datatypes.JSON `gorm:"type:json"`
 	UpdatedAt     time.Time       `gorm:"type:timestamptz;default:now();not null"`
 
-	User *user_model.User `gorm:"foreignKey:UserID;reference:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	User *user.User `gorm:"foreignKey:UserID;reference:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 type UserProfileHistory struct {
@@ -32,5 +32,5 @@ type UserProfileHistory struct {
 	ChangedAt     time.Time `gorm:"type:timestamptz;default:now();not null"`
 	Operation     string    `gorm:"type:varchar(10);not null"`
 
-	User *user_model.User `gorm:"foreignKey:UserID;reference:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	User *user.User `gorm:"foreignKey:UserID;reference:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }

@@ -6,12 +6,12 @@ import (
 	"os"
 
 	"ariga.io/atlas-provider-gorm/gormschema"
-	"github.com/go-hexagonal-practice/internal/core/domain/oauth"
-	"github.com/go-hexagonal-practice/internal/core/domain/profile"
-	"github.com/go-hexagonal-practice/internal/core/domain/rbac"
-	"github.com/go-hexagonal-practice/internal/core/domain/sessions"
-	"github.com/go-hexagonal-practice/internal/core/domain/user"
-	"github.com/go-hexagonal-practice/internal/core/domain/verification"
+	"github.com/go-hexagonal-practice/internal/adapters/repository/postgre/persistency/oauth"
+	"github.com/go-hexagonal-practice/internal/adapters/repository/postgre/persistency/profile"
+	"github.com/go-hexagonal-practice/internal/adapters/repository/postgre/persistency/rbac"
+	"github.com/go-hexagonal-practice/internal/adapters/repository/postgre/persistency/sessions"
+	"github.com/go-hexagonal-practice/internal/adapters/repository/postgre/persistency/user"
+	"github.com/go-hexagonal-practice/internal/adapters/repository/postgre/persistency/verification"
 
 	// "github.com/go-hexagonal-practice/internal/core/domain/user_test/user"
 	"gorm.io/gorm"

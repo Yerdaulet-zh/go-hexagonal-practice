@@ -3,7 +3,7 @@ package verification
 import (
 	"time"
 
-	user_model "github.com/go-hexagonal-practice/internal/core/domain/user"
+	"github.com/go-hexagonal-practice/internal/adapters/repository/postgre/persistency/user"
 	"github.com/google/uuid"
 	"github.com/lib/pq"
 	"gorm.io/datatypes"
@@ -21,7 +21,7 @@ type Verifications struct {
 	ExpiresAt time.Time `gorm:"type:timestamptz;not null"`
 	CreatedAt time.Time `gorm:"type:timestamptz;default:now();not null"`
 
-	User *user_model.User `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	User *user.User `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 type UsersMFASecrets struct {
@@ -30,5 +30,5 @@ type UsersMFASecrets struct {
 	BackupCodes pq.StringArray `gorm:"type:text[];not null"`
 	CreatedAt   time.Time      `gorm:"type:timestamptz;default:now();not null"`
 
-	User *user_model.User `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	User *user.User `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
