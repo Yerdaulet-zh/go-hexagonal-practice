@@ -8,22 +8,22 @@ import (
 )
 
 type User struct {
-	ID           uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()"`
-	Email        string    `gorm:"type:varchar(100);unique;index;not null"`
-	UserStatus   string    `gorm:"type:user_status;default:pending_verification;not null"`
-	IsMFAEnabled bool      `gorm:"type:boolean;default:false;not null"`
+	ID           uuid.UUID
+	Email        string
+	UserStatus   string
+	IsMFAEnabled bool
 
-	CreatedAt time.Time      `gorm:"type:timestamptz;default:now();not null"`
-	UpdatedAt time.Time      `gorm:"type:timestamptz;default:now();not null"`
-	DeletedAt gorm.DeletedAt `gorm:"type:timestamptz;index"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt
 }
 
 type UserCredentials struct {
-	UserID             uuid.UUID `gorm:"type:uuid;primaryKey"`
-	PasswordHash       string    `gorm:"type:varchar(255);not null"`
-	PasswordSalt       *string   `gorm:"type:varchar(255)"`
-	LastPasswordChange time.Time `gorm:"column:last_password_change_at;type:timestamptz;default:now();not null"`
-	UpdatedAt          time.Time `gorm:"type:timestamptz;default:now();not null"`
+	UserID             uuid.UUID
+	PasswordHash       string
+	PasswordSalt       *string
+	LastPasswordChange time.Time
+	UpdatedAt          time.Time
 
-	User *User `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	User *User
 }

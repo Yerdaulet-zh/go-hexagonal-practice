@@ -1,31 +1,38 @@
 package rbac
 
-/*
-CREATE TABLE roles (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(50) UNIQUE NOT NULL, -- 'admin', 'user', 'auditor'
-    description TEXT
-);
+import (
+	"time"
 
-CREATE TABLE permissions (
-    id SERIAL PRIMARY KEY,
-    slug VARCHAR(50) UNIQUE NOT NULL, -- 'users.read', 'users.write', 'audit.view'
-    description TEXT
-);
+	user_model "github.com/go-hexagonal-practice/internal/core/domain/user"
+	"github.com/google/uuid"
+)
 
--- Join table for Role-Permissions
-CREATE TABLE role_permissions (
-    role_id INT REFERENCES roles(id) ON DELETE CASCADE,
-    permission_id INT REFERENCES permissions(id) ON DELETE CASCADE,
-    PRIMARY KEY (role_id, permission_id)
-);
+type Role struct {
+	ID          uint64
+	Name        string // admin, user, auditor
+	Description *string
+}
 
--- Assign roles to users
-CREATE TABLE user_roles (
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    role_id INT REFERENCES roles(id) ON DELETE CASCADE,
-    assigned_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    assigned_by UUID REFERENCES users(id), -- Who gave this role? Audit trail.
-    PRIMARY KEY (user_id, role_id)
-);
-*/
+type Permissions struct {
+	ID          uint64
+	Slug        string // users.read, users.write, audit.view
+	Description *string
+}
+
+type RolePermissions struct {
+	RoleID       uint64
+	PermissionID uint64
+
+	Role        *Role
+	Permissions *Permissions
+}
+
+type UserRoles struct {
+	UserID     uuid.UUID
+	RoleID     uint64
+	AssignedAt time.Time
+	AssignedBy *uuid.UUID // NULL if assigned by a system
+
+	User *user_model.User
+	Role *Role
+}

@@ -9,16 +9,16 @@ import (
 )
 
 type OauthIdentities struct {
-	ID     uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()"`
-	UserID uuid.UUID `gorm:"type:uuid;not null;uniqueIndex:idx_user_provider;not null"`
+	ID     uuid.UUID
+	UserID uuid.UUID
 
-	Provider   string `gorm:"type:varchar(50);uniqueIndex:idx_user_provider;uniqueIndex:idx_user_provider_id;not null"`
-	ProviderID string `gorm:"type:varchar(255);uniqueIndex:idx_user_provider_id;not null"`
+	Provider   string
+	ProviderID string
 
-	ProfileData datatypes.JSON `gorm:"type:jsonb;not null"`
+	ProfileData datatypes.JSON
 
-	CreatedAt time.Time `gorm:"type:timestamptz;default:now();not null"`
-	UpdatedAt time.Time `gorm:"type:timestamptz;default:now();not null"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 
-	User *user_model.User `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	User *user_model.User
 }

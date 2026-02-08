@@ -9,28 +9,28 @@ import (
 )
 
 type UserProfiles struct {
-	UserID        uuid.UUID       `gorm:"type:uuid;primaryKey"`
-	FirstName     string          `gorm:"type:varchar(100);not null"`
-	LastName      *string         `gorm:"type:varchar(100)"`
-	CountryCode   *string         `gorm:"type:varchar(2)"`
-	CountrySource *string         `gorm:"type:varchar(50)"`
-	AvatarURL     *string         `gorm:"type:text"`
-	Preferences   *datatypes.JSON `gorm:"type:json"`
-	UpdatedAt     time.Time       `gorm:"type:timestamptz;default:now();not null"`
+	UserID        uuid.UUID
+	FirstName     string
+	LastName      *string
+	CountryCode   *string
+	CountrySource *string
+	AvatarURL     *string
+	Preferences   *datatypes.JSON
+	UpdatedAt     time.Time
 
-	User *user_model.User `gorm:"foreignKey:UserID;reference:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	User *user_model.User
 }
 
 type UserProfileHistory struct {
-	HistoryId     uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()"`
-	UserID        uuid.UUID `gorm:"type:uuid;not null"`
-	FirstName     string    `gorm:"type:varchar(100);not null"`
-	LastName      *string   `gorm:"type:varchar(100)"`
-	CountryCode   *string   `gorm:"type:varchar(2)"`
-	CountrySource *string   `gorm:"type:varchar(50)"`
-	AvatarURL     *string   `gorm:"type:text"`
-	ChangedAt     time.Time `gorm:"type:timestamptz;default:now();not null"`
-	Operation     string    `gorm:"type:varchar(10);not null"`
+	HistoryId     uuid.UUID
+	UserID        uuid.UUID
+	FirstName     string
+	LastName      *string
+	CountryCode   *string
+	CountrySource *string
+	AvatarURL     *string
+	ChangedAt     time.Time
+	Operation     string
 
-	User *user_model.User `gorm:"foreignKey:UserID;reference:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	User *user_model.User
 }

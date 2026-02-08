@@ -8,8 +8,10 @@ import (
 	"ariga.io/atlas-provider-gorm/gormschema"
 	"github.com/go-hexagonal-practice/internal/core/domain/oauth"
 	"github.com/go-hexagonal-practice/internal/core/domain/profile"
+	"github.com/go-hexagonal-practice/internal/core/domain/rbac"
 	"github.com/go-hexagonal-practice/internal/core/domain/sessions"
 	"github.com/go-hexagonal-practice/internal/core/domain/user"
+	"github.com/go-hexagonal-practice/internal/core/domain/verification"
 
 	// "github.com/go-hexagonal-practice/internal/core/domain/user_test/user"
 	"gorm.io/gorm"
@@ -30,6 +32,12 @@ func main() {
 		&profile.UserProfiles{},
 		&profile.UserProfileHistory{},
 		&sessions.UserSessions{},
+		&verification.Verifications{},
+		&verification.UsersMFASecrets{},
+		&rbac.Role{},
+		&rbac.RolePermissions{},
+		&rbac.Permissions{},
+		&rbac.UserRoles{},
 		// &user.Session{},
 		// &user.UserNameHistory{},
 		// &user.UserSurnameHistory{},
