@@ -36,5 +36,5 @@ type UserProfileHistory struct {
 }
 
 func (UserProfile) TableName() string {
-	return "user_profiles"
+	return "user_profile"
 }

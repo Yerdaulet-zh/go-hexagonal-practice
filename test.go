@@ -44,3 +44,24 @@ func main() {
 
 	fmt.Printf("Domain View (Go Struct): %+v\n", session.Location.City)
 }
+
+/*
+schema "public" {
+url = "file://internal/adapters/repository/postgre/migrations/000000000000_setup.sql"
+}
+schema "public" {
+url = "file://internal/adapters/repository/postgre/migrations/20260208041131_verification_type_enum.sql"
+}
+schema "public" {
+url = data.external_schema.gorm.url
+}
+schema "public" {
+url = "file://internal/adapters/repository/postgre/migrations/20260207184614_log_profile_changes.sql"
+}
+schema "public" {
+url = "file://internal/adapters/repository/postgre/migrations/20260208045016_audit_logs_with_partitioning.sql"
+}
+schema "public" {
+url = "file://internal/adapters/repository/postgre/migrations/20260210040756_renameUserProfilesTable.sql"
+}
+*/

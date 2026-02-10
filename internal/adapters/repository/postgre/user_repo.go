@@ -6,8 +6,10 @@ import (
 	"errors"
 	"fmt"
 
+	repo_profile "github.com/go-hexagonal-practice/internal/adapters/repository/postgre/persistency/profile"
 	repo_sessions "github.com/go-hexagonal-practice/internal/adapters/repository/postgre/persistency/sessions"
 	repo_user "github.com/go-hexagonal-practice/internal/adapters/repository/postgre/persistency/user"
+	domain_profile "github.com/go-hexagonal-practice/internal/core/domain/profile"
 	domain_sessions "github.com/go-hexagonal-practice/internal/core/domain/sessions"
 	domain_user "github.com/go-hexagonal-practice/internal/core/domain/user"
 	"github.com/go-hexagonal-practice/internal/core/ports"
@@ -39,7 +41,7 @@ func (repo *UserRepo) GetUserByEmail(ctx context.Context, email string) (*domain
 
 }
 
-func (repo *UserRepo) CreateUser(ctx context.Context, user *domain_user.User, userCredentials *domain_user.UserCredentials, userSessions *domain_sessions.UserSessions) (*domain_sessions.UserSessions, error) {
+func (repo *UserRepo) CreateUser(ctx context.Context, user *domain_user.User, userCredentials *domain_user.UserCredentials, userSessions *domain_sessions.UserSessions, userProfileRecord *domain_profile.UserProfile) (*domain_sessions.UserSessions, error) {
 	u := repo_user.User{
 		Email:      user.Email,
 		UserStatus: user.UserStatus,
@@ -86,7 +88,16 @@ func (repo *UserRepo) CreateUser(ctx context.Context, user *domain_user.User, us
 		}
 
 		// User Profile
-
+		userProfileRecord := repo_profile.UserProfile{
+			UserID:        u.ID,
+			FirstName:     userProfileRecord.FirstName,
+			LastName:      userProfileRecord.LastName,
+			CountryCode:   userProfileRecord.CountryCode,
+			CountrySource: userProfileRecord.CountrySource,
+		}
+		if err := gorm.G[repo_profile.UserProfile](tx).Create(ctx, &userProfileRecord); err != nil {
+			return err
+		}
 		return nil
 	})
 	if err != nil {

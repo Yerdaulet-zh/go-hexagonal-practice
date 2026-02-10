@@ -2,11 +2,13 @@ package http
 
 import (
 	"encoding/json"
+	"net"
 	"net/http"
 	"strings"
 
 	"github.com/go-hexagonal-practice/internal/core/ports"
 	"github.com/go-playground/validator/v10"
+	"github.com/mileusna/useragent"
 )
 
 var validate = validator.New()
@@ -39,30 +41,23 @@ func (h *userHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// if (req.CountryCode != nil && req.CountrySource == nil) || (req.CountrySource != nil && req.CountryCode == nil) {
-	// 	h.writeJSONError(w, http.StatusBadRequest, "Country code and source both should be provded or vise versa")
-	// 	return
-	// }
-	defer r.Body.Close()
-
-	// ipAddress := strings.Split(r.RemoteAddr, ":")[0]
-	ipAddress := r.RemoteAddr
-	if strings.Contains(ipAddress, "[::1]") {
-		ipAddress = "127.0.0.1"
-	} else {
-		ipAddress = strings.Split(ipAddress, ":")[0]
-	}
+	ipAddress := h.getClientIP(r)
 	userAgent := h.stringPtr(r.Header.Get("User-Agent"))
-	// sessionInit := domain_sessions.UserSessions{
-	// 	IPAddress: ipAddress,
-	// 	UserAgent: h.stringPtr(r.Header.Get("User-Agent")),
-	// }
-	// userProfileInit := domain_profile.UserProfiles{
-	// 	UserID: ,
-	// }
+	device := h.parseDevice(userAgent)
 
+	params := ports.RegisterParams{
+		Email:         req.Email,
+		Password:      req.Password,
+		FirstName:     req.FirstName,
+		LastName:      req.LastName,
+		CountryCode:   req.CountryCode,
+		CountrySource: req.CountryCode,
+		IPAddress:     ipAddress,
+		UserAgent:     userAgent,
+		Device:        device,
+	}
 	ctx := r.Context()
-	sessionRecord, err := h.userService.Register(ctx, req.Email, req.Password, ipAddress, userAgent)
+	sessionRecord, err := h.userService.Register(ctx, params)
 
 	if err != nil {
 		h.writeJSONError(w, http.StatusInternalServerError, err.Error())
@@ -91,4 +86,44 @@ func (h *userHandler) stringPtr(s string) *string {
 		return nil
 	}
 	return &s
+}
+
+func (h *userHandler) getClientIP(r *http.Request) string {
+	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+		// The first IP in the list is the original client
+		return strings.TrimSpace(strings.Split(xff, ",")[0])
+	}
+
+	// Check X-Real-IP
+	if xri := r.Header.Get("X-Real-IP"); xri != "" {
+		return xri
+	}
+
+	// For local testing without Nginx
+	ipAddress, _, _ := net.SplitHostPort(r.RemoteAddr)
+	if strings.Contains(ipAddress, "[::1]") {
+		return "127.0.0.1"
+	}
+
+	return "0.0.0.0"
+}
+
+func (s *userHandler) parseDevice(uaString *string) *string {
+	if uaString == nil || *uaString == "" {
+		return nil
+	}
+
+	ua := useragent.Parse(*uaString)
+
+	// Combine OS and Device info for a descriptive string
+	deviceInfo := ua.OS + " " + ua.Device
+	if ua.Mobile {
+		deviceInfo += " (Mobile)"
+	} else if ua.Tablet {
+		deviceInfo += " (Tablet)"
+	} else {
+		deviceInfo += " (Desktop)"
+	}
+
+	return &deviceInfo
 }

@@ -8,7 +8,7 @@ import (
 	"gorm.io/datatypes"
 )
 
-type UserProfiles struct {
+type UserProfile struct {
 	UserID        uuid.UUID
 	FirstName     string
 	LastName      *string

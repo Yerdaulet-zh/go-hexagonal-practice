@@ -10,10 +10,10 @@ import (
 	"time"
 
 	"github.com/badoux/checkmail"
+	domain_profile "github.com/go-hexagonal-practice/internal/core/domain/profile"
 	domain_sessions "github.com/go-hexagonal-practice/internal/core/domain/sessions"
 	domain_user "github.com/go-hexagonal-practice/internal/core/domain/user"
 	"github.com/go-hexagonal-practice/internal/core/ports"
-	"github.com/mileusna/useragent"
 	"golang.org/x/crypto/argon2"
 )
 
@@ -27,15 +27,18 @@ func NewUserService(repo ports.UserPort) *UserService {
 	}
 }
 
-func (s *UserService) Register(ctx context.Context, email string, password string, ipAddress string, userAgent *string) (*domain_sessions.UserSessions, error) {
-	if err := checkmail.ValidateFormat(email); err != nil {
+func (s *UserService) Register(
+	ctx context.Context,
+	params ports.RegisterParams,
+) (*domain_sessions.UserSessions, error) {
+	if err := checkmail.ValidateFormat(params.Email); err != nil {
 		return nil, fmt.Errorf("Email syntax validation error: %s", err.Error())
 	}
-	if err := checkmail.ValidateHost(email); err != nil {
+	if err := checkmail.ValidateHost(params.Email); err != nil {
 		return nil, fmt.Errorf("Email service validation error: %s", err.Error())
 	}
 
-	existingUser, err := s.userRepo.GetUserByEmail(ctx, email)
+	existingUser, err := s.userRepo.GetUserByEmail(ctx, params.Email)
 	if err == nil && existingUser != nil {
 		return nil, fmt.Errorf("user already exists")
 	}
@@ -43,12 +46,12 @@ func (s *UserService) Register(ctx context.Context, email string, password strin
 	// 	return nil, fmt.Errorf("Internal server error: %w", err)
 	// }
 
-	hashedPassword, passwordSalt, err := hashPassword(password, "")
+	hashedPassword, passwordSalt, err := hashPassword(params.Password, "")
 	if err != nil {
 		return nil, err
 	}
 	newUser := &domain_user.User{
-		Email:      email,
+		Email:      params.Email,
 		UserStatus: "pending_verification",
 	}
 
@@ -63,20 +66,26 @@ func (s *UserService) Register(ctx context.Context, email string, password strin
 		return nil, err
 	}
 	expiration := time.Now().Add(24 * time.Hour)
-	device := s.parseDevice(userAgent)
 	userSessionRecord := domain_sessions.UserSessions{
 		RefreshTokenHash: hashToken(token),
-		IPAddress:        ipAddress,
-		UserAgent:        userAgent,
-		Device:           device,
+		IPAddress:        params.IPAddress,
+		UserAgent:        params.UserAgent,
+		Device:           params.Device,
 		ExpiresAt:        expiration,
 	}
 
-	session, err := s.userRepo.CreateUser(ctx, newUser, userCredentials, &userSessionRecord)
-	session.RefreshTokenHash = token
+	userProfileRecord := domain_profile.UserProfile{
+		FirstName:     params.FirstName,
+		LastName:      params.LastName,
+		CountryCode:   params.CountryCode,
+		CountrySource: params.CountrySource,
+	}
+
+	session, err := s.userRepo.CreateUser(ctx, newUser, userCredentials, &userSessionRecord, &userProfileRecord)
 	if err != nil {
 		return nil, err
 	}
+	session.RefreshTokenHash = token
 
 	return session, nil
 }
@@ -122,24 +131,4 @@ func generateSecureToken() (string, error) {
 func hashToken(token string) string {
 	hash := sha256.Sum256([]byte(token))
 	return hex.EncodeToString(hash[:])
-}
-
-func (s *UserService) parseDevice(uaString *string) *string {
-	if uaString == nil || *uaString == "" {
-		return nil
-	}
-
-	ua := useragent.Parse(*uaString)
-
-	// Combine OS and Device info for a descriptive string
-	deviceInfo := ua.OS + " " + ua.Device
-	if ua.Mobile {
-		deviceInfo += " (Mobile)"
-	} else if ua.Tablet {
-		deviceInfo += " (Tablet)"
-	} else {
-		deviceInfo += " (Desktop)"
-	}
-
-	return &deviceInfo
 }

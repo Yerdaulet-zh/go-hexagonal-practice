@@ -1,6 +1,6 @@
 ALTER TABLE user_profiles RENAME TO user_profile;
 
--- Rename the Foreign Key (GORM/Atlas will want this to match the new table name)
+-- -- Rename the Foreign Key (GORM/Atlas will want this to match the new table name)
 ALTER TABLE "user_profile" RENAME CONSTRAINT "fk_user_profiles_user" TO "fk_user_profile_user";
 
 -- DROP TRIGGER IF EXISTS trigger_log_profile_changes ON user_profiles;
