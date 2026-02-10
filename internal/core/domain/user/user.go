@@ -21,7 +21,7 @@ type User struct {
 type UserCredentials struct {
 	UserID             uuid.UUID
 	PasswordHash       string
-	PasswordSalt       *string
+	PasswordSalt       string
 	LastPasswordChange time.Time
 	UpdatedAt          time.Time
 

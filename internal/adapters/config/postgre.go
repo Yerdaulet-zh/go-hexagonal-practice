@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -27,7 +28,7 @@ type GormLoggerConfig struct {
 
 func NewDefaultDBConfig() (*DBConfig, error) {
 	return &DBConfig{
-		dsn:             "host=postgres user=admin password=password dbname=myapp port=5432 sslmode=disable", //os.Getenv("POSTGRES_DSN"),
+		dsn:             os.Getenv("POSTGRES_DSN"), // "host=postgres user=admin password=password dbname=myapp port=5432 sslmode=disable",
 		maxIdleConns:    viper.GetInt("database.postgres.MaxIdleConns"),
 		maxOpenConns:    viper.GetInt("database.postgres.MaxOpenConns"),
 		connMaxLifetime: viper.GetDuration("database.postgres.ConnMaxLifetime"),

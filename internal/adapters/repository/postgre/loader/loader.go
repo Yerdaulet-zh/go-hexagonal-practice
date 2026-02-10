@@ -29,7 +29,7 @@ func main() {
 		&user.User{},
 		&user.UserCredentials{},
 		&oauth.OauthIdentities{},
-		&profile.UserProfiles{},
+		&profile.UserProfile{},
 		&profile.UserProfileHistory{},
 		&sessions.UserSessions{},
 		&verification.Verifications{},

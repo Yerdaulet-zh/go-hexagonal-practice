@@ -8,7 +8,7 @@ import (
 	"gorm.io/datatypes"
 )
 
-type UserProfiles struct {
+type UserProfile struct {
 	UserID        uuid.UUID       `gorm:"type:uuid;primaryKey"`
 	FirstName     string          `gorm:"type:varchar(100);not null"`
 	LastName      *string         `gorm:"type:varchar(100)"`
@@ -33,4 +33,8 @@ type UserProfileHistory struct {
 	Operation     string    `gorm:"type:varchar(10);not null"`
 
 	User *user.User `gorm:"foreignKey:UserID;reference:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+}
+
+func (UserProfile) TableName() string {
+	return "user_profiles"
 }

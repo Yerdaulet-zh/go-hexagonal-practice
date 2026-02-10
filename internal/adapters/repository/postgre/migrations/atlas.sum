@@ -1,4 +1,4 @@
-h1:N2muvnkegfuDEC65YtA+iT9MKMxT5+5fTNUT2tXcs74=
+h1:q28gvzWLxQgl9ZMUcS8pOR6CsYjXAlqjhuTAR7l7Dis=
 000000000000_setup.sql h1:xKBCc+7DHug9xWEIeViqFm/1ZxWRqjHQ5fLYxlJ31V0=
 20260207181912_create_user_tables.sql h1:f1IVehArfaON3av1fQq8bzYd2PFEAT3JI92tVIXOyYI=
 20260207182025_create_oauth_identities_table.sql h1:wilN4P1iIQL2PsFqaMyX9RiG0b32JISrM3SOW3bkkaI=
@@ -10,3 +10,4 @@ h1:N2muvnkegfuDEC65YtA+iT9MKMxT5+5fTNUT2tXcs74=
 20260208043119_create_verification_and_mfa_secrets.sql h1:m7mjyNaOFkLTJ6O9NznqDnsFtyVcIMOa6aOVCevjWcg=
 20260208045016_audit_logs_with_partitioning.sql h1:whfYEnnHmRpBI62yTvrp/iSK9eBLqQ6aoJaW1jpJSM4=
 20260208051056_create_RBAC_tables.sql h1:5Z4OgrLzIZpd/7Nb6ELKT8CJTIM+WYpDO55Wxp8UMZs=
+20260210040756_renameUserProfilesTable.sql h1:1X2mkbS1ycg1ruCTZ9CjdJ/NAeYIFBKxyRc0i4F3v0k=

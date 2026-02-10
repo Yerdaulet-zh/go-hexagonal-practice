@@ -17,11 +17,11 @@ import (
 var ErrInvalidDSN = errors.New("invalid DSN provided")
 
 type Client struct {
-	db *gorm.DB
+	DB *gorm.DB
 }
 
 func (c *Client) Ping(ctx context.Context) error {
-	sqlDB, err := c.db.DB()
+	sqlDB, err := c.DB.DB()
 	if err != nil {
 		return err
 	}
@@ -38,7 +38,7 @@ func NewPostgreSQLClient(cfg *config.DBConfig) (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Client{db: db}, nil
+	return &Client{DB: db}, nil
 }
 
 func openPostgreSQLDB(cfg *config.DBConfig) (*gorm.DB, error) {
@@ -87,7 +87,7 @@ func openPostgreSQLDB(cfg *config.DBConfig) (*gorm.DB, error) {
 }
 
 func (c *Client) Close() error {
-	sqlDB, err := c.db.DB()
+	sqlDB, err := c.DB.DB()
 	if err != nil {
 		return fmt.Errorf("failed to get sql.DB for closing: %w", err)
 	}

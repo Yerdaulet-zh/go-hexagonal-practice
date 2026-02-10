@@ -180,21 +180,21 @@ services:
     restart: unless-stopped
     <<: *loki-logging
   
-  go-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: go-app
-    ports:
-      - "2112:2112"
-    restart: unless-stopped
-    depends_on:
-      - postgres
-      - redis
-      - otel-collector
-    environment:
-      CONFIG_PATH: /app/configs/configs.yaml
-    <<: *loki-logging
+  # go-app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: go-app
+  #   ports:
+  #     - "2112:2112"
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #     - otel-collector
+  #   environment:
+  #     CONFIG_PATH: /app/configs/configs.yaml
+  #   <<: *loki-logging
 
 volumes:
   postgres_data:

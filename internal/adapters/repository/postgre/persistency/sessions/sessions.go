@@ -1,9 +1,12 @@
 package sessions
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/go-hexagonal-practice/internal/adapters/repository/postgre/persistency/user"
+	domain_sessions "github.com/go-hexagonal-practice/internal/core/domain/sessions"
+	"github.com/go-hexagonal-practice/internal/core/ports"
 	"github.com/google/uuid"
 	"gorm.io/datatypes"
 )
@@ -25,4 +28,26 @@ type UserSessions struct {
 	LastActiveAt time.Time `gorm:"type:timestamptz;default:now();not null"`
 
 	User *user.User `gorm:"foreignKey:UserID;reference:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+}
+
+func (u *UserSessions) ToDomain(logger ports.Logger) *domain_sessions.UserSessions {
+	domainSession := domain_sessions.UserSessions{
+		ID:               u.ID,
+		UserID:           u.UserID,
+		RefreshTokenHash: u.RefreshTokenHash,
+		IPAddress:        u.IPAddress,
+		UserAgent:        u.UserAgent,
+		Device:           u.Device,
+		// GeoLocation:      u.GeoLocation,
+		ExpiresAt: u.ExpiresAt,
+	}
+	if u.GeoLocation != nil {
+		var geo domain_sessions.GeoLocation
+		if err := json.Unmarshal(*u.GeoLocation, &geo); err == nil {
+			domainSession.GeoLocation = &geo
+		} else {
+			logger.Error("Geo Location Mapping Error left the column value empty", "error", err.Error())
+		}
+	}
+	return &domainSession
 }

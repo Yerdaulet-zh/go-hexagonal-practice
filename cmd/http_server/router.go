@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	http_hanlder "github.com/go-hexagonal-practice/internal/adapters/handlers/http"
 	"github.com/go-hexagonal-practice/internal/adapters/handlers/http/middleware"
 	"github.com/go-hexagonal-practice/internal/adapters/repository/postgre"
 	"github.com/go-hexagonal-practice/internal/core/ports"
@@ -22,8 +23,15 @@ func ApplyMiddleware(h http.Handler, mws ...Middleware) http.Handler {
 	return h
 }
 
-func MapBusinessRoutes(logger ports.Logger, rdb *redis.Client) http.Handler {
+func MapBusinessRoutes(
+	logger ports.Logger,
+	rdb *redis.Client,
+	userSvc ports.UserUseCase,
+) http.Handler {
 	mux := http.NewServeMux()
+
+	userHandler := http_hanlder.NewUserHandler(userSvc)
+	mux.HandleFunc("POST /v1/register", userHandler.Register)
 
 	middlewares := []Middleware{
 		middleware.LoggingMiddleware(logger),                   // 3. Log everything (including blocks)

@@ -23,10 +23,14 @@ data "composite_schema" "app" {
   schema "public" {
     url = "file://internal/adapters/repository/postgre/migrations/20260208045016_audit_logs_with_partitioning.sql"
   }
+  schema "public" {
+    url = "file://internal/adapters/repository/postgre/migrations/20260210040756_renameUserProfilesTable.sql"
+  }
 }
 
 env "local" {
-  # 2. Reference the composite schema instead of the array
+  url = "postgres://admin:password@localhost:5432/myapp?sslmode=disable"
+
   src = data.composite_schema.app.url
   
   dev = "docker://postgres/17/dev?search_path=public"

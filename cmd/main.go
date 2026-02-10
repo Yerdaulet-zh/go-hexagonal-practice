@@ -2,25 +2,22 @@ package main
 
 import (
 	"context"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
 
 	httpserver "github.com/go-hexagonal-practice/cmd/http_server"
 	"github.com/go-hexagonal-practice/internal/adapters/config"
-	"github.com/go-hexagonal-practice/internal/adapters/logging"
 	"github.com/go-hexagonal-practice/internal/adapters/repository/postgre"
-	"github.com/go-hexagonal-practice/internal/core/ports"
+	"github.com/go-hexagonal-practice/internal/core/service"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/redis/go-redis/v9"
 )
 
 func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
-	logger, client, rdb := loadComponents()
+	logger, client, rdb := httpserver.LoadComponents()
 
 	defer func() {
 		logger.Info("Closing infrastructure connections...")
@@ -38,7 +35,11 @@ func main() {
 	logger.Info("Successfully loaded HTTP Server config")
 
 	reg := prometheus.NewRegistry()
-	mapBusinessHandler := httpserver.MapBusinessRoutes(logger, rdb)
+
+	userRepo := postgre.NewUserRepository(client.DB, logger)
+	userService := service.NewUserService(userRepo)
+
+	mapBusinessHandler := httpserver.MapBusinessRoutes(logger, rdb, userService)
 	mapManagementRoutes := httpserver.MapManagementRoutes(logger, client, reg)
 
 	go func() {
@@ -53,43 +54,4 @@ func main() {
 	}
 
 	logger.Info("Application exited cleanly")
-}
-
-func loadComponents() (ports.Logger, *postgre.Client, *redis.Client) {
-	// Configuration
-	cfg, err := config.NewLoggingConfig()
-	if err != nil {
-		log.Fatalf("Error initializing config: %v", err)
-	}
-
-	// Logger
-	logger := logging.NewLogger(cfg)
-	logger.Info("Logging successfully configured to use the adapter: ", cfg.Adapter())
-
-	// PostgreSQL
-	logger.Info("Loading PostgreSQL config")
-	postgreConfig, err := config.NewDefaultDBConfig()
-	if err != nil {
-		logger.Error("Failed to load PostgreSQL config", "error", err)
-		os.Exit(1)
-	}
-
-	logger.Info("Connecting to PostgreSQL database")
-	client, err := postgre.NewPostgreSQLClient(postgreConfig)
-	if err != nil {
-		logger.Error("Postgresql connection error", "error", err)
-		os.Exit(1)
-	}
-	logger.Info("Successful PostgreSQL connection")
-
-	// Redis
-	logger.Info("Connecting to redis server")
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
-	logger.Info("Successful redis connection")
-
-	return logger, client, rdb
 }

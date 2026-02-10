@@ -3,6 +3,7 @@ package user
 import (
 	"time"
 
+	domain_user "github.com/go-hexagonal-practice/internal/core/domain/user"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -26,4 +27,17 @@ type UserCredentials struct {
 	UpdatedAt          time.Time `gorm:"type:timestamptz;default:now();not null"`
 
 	User *User `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+}
+
+func (u *User) ToDomain() *domain_user.User {
+	return &domain_user.User{
+		ID:           u.ID,
+		Email:        u.Email,
+		UserStatus:   u.UserStatus,
+		IsMFAEnabled: u.IsMFAEnabled,
+
+		CreatedAt: u.CreatedAt,
+		UpdatedAt: u.UpdatedAt,
+		DeletedAt: u.DeletedAt,
+	}
 }
