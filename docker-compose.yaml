@@ -198,16 +198,16 @@ services:
 
 volumes:
   postgres_data:
-    external: true
+    external: false
     name: user-authentication-authorization_postgres_data
   redis_data:
-    external: true
+    external: false
     name: user-authentication-authorization_redis_data
   prometheus_data:
-    external: true
+    external: false
     name: user-authentication-authorization_prometheus_data
   tempo_data:
     external: false
   grafana_data:
-    external: true
+    external: false
     name: user-authentication-authorization_grafana_data
