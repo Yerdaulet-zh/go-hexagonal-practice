@@ -65,7 +65,7 @@ func (s *UserService) Register(
 	if err != nil {
 		return nil, err
 	}
-	expiration := time.Now().Add(24 * time.Hour)
+	expiration := time.Now().Add(15 * time.Minute)
 	userSessionRecord := domain_sessions.UserSessions{
 		RefreshTokenHash: hashToken(token),
 		IPAddress:        params.IPAddress,

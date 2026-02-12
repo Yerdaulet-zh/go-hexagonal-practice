@@ -29,7 +29,7 @@ func (h *userHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req UserAccountRegisterRequest
+	var req UserAccountRegisterEmailRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		h.writeJSONError(w, http.StatusBadRequest, "Invalid Request Payload")
 		return
@@ -58,20 +58,17 @@ func (h *userHandler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 	ctx := r.Context()
 	sessionRecord, err := h.userService.Register(ctx, params)
-
 	if err != nil {
 		h.writeJSONError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	response := UserAccountRegisterResponse{
+	response := UserAccountRegisterEmailResponse{
 		SessionID:    sessionRecord.ID.String(),
-		UserID:       sessionRecord.UserID.String(),
 		RefreshToken: sessionRecord.RefreshTokenHash,
 		ExpiresAt:    sessionRecord.ExpiresAt,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	// w.WriteHeader(http.StatusCreated)
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(response)
 }
